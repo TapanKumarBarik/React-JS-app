@@ -16,6 +16,7 @@ import ExpensesPage from "./pages/Expenses/Expenses"; // Fix import path
 import GroupsPage from "./pages/Groups/Groups"; // Fix import path
 import "./App.css";
 import Dashboard from "./pages/Dashboard/Dashboard";
+import GroupDetails from "./pages/Groups/GroupDetails";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(
@@ -41,6 +42,7 @@ function App() {
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/groups" element={<GroupsPage />} />
+                  <Route path="/groups/:groupId" element={<GroupDetails />} />
                   <Route path="/" element={<Navigate to="/dashboard" />} />
                 </Routes>
               </main>
