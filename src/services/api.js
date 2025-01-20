@@ -112,4 +112,69 @@ export const api = {
     if (!response.ok) throw await response.json();
     return response.json();
   },
+
+  // Expenses API methods
+  createExpense: async (expenseData, token) => {
+    const response = await fetch(`${BASE_URL}/expenses/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(expenseData),
+    });
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
+
+  getUserExpenses: async (token) => {
+    const response = await fetch(`${BASE_URL}/expenses/`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
+
+  getExpensesByPeriod: async (period, value, token) => {
+    const response = await fetch(
+      `${BASE_URL}/expenses/?period=${period}&value=${value}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
+
+  // Update the existing createGroup method with member_ids support
+  createGroup: async (groupData, token) => {
+    const response = await fetch(`${BASE_URL}/groups/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        name: groupData.name,
+        member_ids: groupData.member_ids || [], // Add support for member_ids
+      }),
+    });
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
+
+  // Add a new method to search users (helpful for adding members)
+  searchUsers: async (query, token) => {
+    const response = await fetch(`${BASE_URL}/users/search?q=${query}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
 };

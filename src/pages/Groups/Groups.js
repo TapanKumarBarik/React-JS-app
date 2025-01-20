@@ -6,13 +6,37 @@ import "./Groups.css";
 function GroupsPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
-  const [newGroup, setNewGroup] = useState({ name: "", member_ids: [] });
+  const [newGroup, setNewGroup] = useState({
+    name: "",
+    member_ids: [],
+  });
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [selectedMembers, setSelectedMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchGroups();
   }, []);
+
+  useEffect(() => {
+    const searchUsers = async () => {
+      if (searchQuery.length >= 2) {
+        try {
+          const token = localStorage.getItem("token");
+          const users = await api.searchUsers(searchQuery, token);
+          setSearchResults(users);
+        } catch (err) {
+          console.error("Failed to search users:", err);
+        }
+      } else {
+        setSearchResults([]);
+      }
+    };
+    const timeoutId = setTimeout(searchUsers, 500);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
 
   const handleGroupClick = (groupId) => {
     navigate(`/groups/${groupId}`);
@@ -29,17 +53,37 @@ function GroupsPage() {
       setLoading(false);
     }
   };
-
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      await api.createGroup(newGroup, token);
+      await api.createGroup(
+        {
+          ...newGroup,
+          member_ids: selectedMembers.map((member) => member.id),
+        },
+        token
+      );
       setNewGroup({ name: "", member_ids: [] });
+      setSelectedMembers([]);
       fetchGroups();
     } catch (err) {
       setError("Failed to create group");
     }
+  };
+
+  const handleAddMember = (user) => {
+    if (!selectedMembers.find((member) => member.id === user.id)) {
+      setSelectedMembers([...selectedMembers, user]);
+    }
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+
+  const handleRemoveMember = (userId) => {
+    setSelectedMembers(
+      selectedMembers.filter((member) => member.id !== userId)
+    );
   };
 
   if (loading) return <div>Loading...</div>;
@@ -50,7 +94,6 @@ function GroupsPage() {
       <div className="page-header">
         <h1>Groups</h1>
       </div>
-
       <div className="create-group">
         <h2>Create New Group</h2>
         <form onSubmit={handleCreateGroup}>
@@ -61,6 +104,43 @@ function GroupsPage() {
             onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
             required
           />
+
+          <div className="member-search">
+            <input
+              type="text"
+              placeholder="Search members..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {searchResults.length > 0 && (
+              <div className="search-results">
+                {searchResults.map((user) => (
+                  <div
+                    key={user.id}
+                    className="search-result-item"
+                    onClick={() => handleAddMember(user)}
+                  >
+                    {user.username}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="selected-members">
+            {selectedMembers.map((member) => (
+              <div key={member.id} className="selected-member">
+                {member.username}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveMember(member.id)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+
           <button type="submit">Create Group</button>
         </form>
       </div>
