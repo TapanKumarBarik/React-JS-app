@@ -1,25 +1,64 @@
-import logo from './logo.svg';
-import './App.css';
+// src/App.js
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import Header from "./components/Header/Header";
+import Sidebar from "./components/Sidebar/Sidebar";
+import Login from "./pages/Auth/Login/Login";
+import Register from "./pages/Auth/Register/Register";
+import Home from "./pages/Home/Home";
+import Preview from "./pages/Preview/Preview";
+import ExpensesPage from "./pages/Expenses/Expenses"; // Fix import path
+import GroupsPage from "./pages/Groups/Groups"; // Fix import path
+import "./App.css";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = React.useState(
+    !!localStorage.getItem("token")
+  );
+  const [userProfile, setUserProfile] = React.useState(
+    JSON.parse(localStorage.getItem("userProfile")) || {}
+  );
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        {isAuthenticated ? (
+          <>
+            <Header
+              username={userProfile.username}
+              setIsAuthenticated={setIsAuthenticated}
+            />
+            <div className="main-container">
+              <Sidebar />
+              <main className="content">
+                <Routes>
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/expenses" element={<ExpensesPage />} />
+                  <Route path="/groups" element={<GroupsPage />} />
+                  <Route path="/" element={<Navigate to="/dashboard" />} />
+                </Routes>
+              </main>
+            </div>
+          </>
+        ) : (
+          <Routes>
+            <Route
+              path="/login"
+              element={<Login setIsAuthenticated={setIsAuthenticated} />}
+            />
+            <Route path="/register" element={<Register />} />
+            <Route path="/" element={<Preview />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        )}
+      </div>
+    </Router>
   );
 }
-
 export default App;
