@@ -167,9 +167,25 @@ export const api = {
     return response.json();
   },
 
-  // Add a new method to search users (helpful for adding members)
+  // Add this to the api object in api.js
+  deleteExpense: async (expenseId, token) => {
+    const response = await fetch(`${BASE_URL}/expenses/${expenseId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw await response.json();
+    return response.json();
+  },
+
+  // In src/services/api.js, add/update this method:
   searchUsers: async (query, token) => {
-    const response = await fetch(`${BASE_URL}/users/search?q=${query}`, {
+    const endpoint = query
+      ? `${BASE_URL}/users/search?query=${query}`
+      : `${BASE_URL}/users/search`;
+
+    const response = await fetch(endpoint, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

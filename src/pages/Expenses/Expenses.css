@@ -112,3 +112,23 @@
 .error {
   color: #dc3545;
 }
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-bottom: 1rem;
+  padding: 10px;
+  background-color: #f8d7da;
+  border-radius: 4px;
+}

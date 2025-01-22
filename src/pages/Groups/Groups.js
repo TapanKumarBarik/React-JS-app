@@ -12,6 +12,8 @@ function GroupsPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
+
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,9 +22,11 @@ function GroupsPage() {
     fetchGroups();
   }, []);
 
+  // Update or add these functions
   useEffect(() => {
-    const searchUsers = async () => {
-      if (searchQuery.length >= 2) {
+    if (searchQuery.length >= 2) {
+      // Only search if 2 or more characters
+      const searchUsers = async () => {
         try {
           const token = localStorage.getItem("token");
           const users = await api.searchUsers(searchQuery, token);
@@ -30,13 +34,25 @@ function GroupsPage() {
         } catch (err) {
           console.error("Failed to search users:", err);
         }
-      } else {
-        setSearchResults([]);
-      }
-    };
-    const timeoutId = setTimeout(searchUsers, 500);
-    return () => clearTimeout(timeoutId);
+      };
+
+      const timeoutId = setTimeout(searchUsers, 300);
+      return () => clearTimeout(timeoutId);
+    } else {
+      setSearchResults([]);
+    }
   }, [searchQuery]);
+
+  // Add these handler methods
+  const handleUserSelect = (user) => {
+    setSelectedUsers((prev) => [...prev, user]);
+    setSearchResults([]);
+    setSearchQuery("");
+  };
+
+  const handleUserRemove = (userId) => {
+    setSelectedUsers((prev) => prev.filter((user) => user.id !== userId));
+  };
 
   const handleGroupClick = (groupId) => {
     navigate(`/groups/${groupId}`);
@@ -89,6 +105,7 @@ function GroupsPage() {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  // JSX part for the Groups component
   return (
     <div className="groups-page">
       <div className="page-header">
@@ -104,11 +121,11 @@ function GroupsPage() {
             onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
             required
           />
-
+          {/* Replace the member search section with this */}
           <div className="member-search">
             <input
               type="text"
-              placeholder="Search members..."
+              placeholder="Search users to add..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -130,7 +147,7 @@ function GroupsPage() {
           <div className="selected-members">
             {selectedMembers.map((member) => (
               <div key={member.id} className="selected-member">
-                {member.username}
+                <span>{member.username}</span>
                 <button
                   type="button"
                   onClick={() => handleRemoveMember(member.id)}

@@ -1,6 +1,7 @@
 // src/pages/Expenses/Expenses.js
 import React, { useState, useEffect } from "react";
 import { api } from "../../services/api";
+
 import "./Expenses.css";
 
 function ExpensesPage() {
@@ -37,7 +38,30 @@ function ExpensesPage() {
       setLoading(false);
     }
   };
+  const fetchExpenses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:8000/api/v1/expenses", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      setExpenses(data);
+    } catch (err) {
+      setError("Failed to fetch expenses");
+    }
+  };
 
+  const handleDelete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      await api.deleteExpense(id, token);
+      await fetchExpenses(); // Refresh list after deletion
+    } catch (err) {
+      setError("Failed to delete expense");
+    }
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -67,6 +91,7 @@ function ExpensesPage() {
       </div>
 
       <div className="expense-form-container">
+        {error && <div className="error-message">{error}</div>}
         <h2>Add New Expense</h2>
         <form onSubmit={handleSubmit} className="expense-form">
           <input
@@ -133,6 +158,7 @@ function ExpensesPage() {
                 <th>Description</th>
                 <th>Amount</th>
                 <th>Group</th>
+                <th>Actions</th> {/* New column */}
               </tr>
             </thead>
             <tbody>
@@ -142,6 +168,22 @@ function ExpensesPage() {
                   <td>{expense.description}</td>
                   <td className="amount">${expense.amount.toFixed(2)}</td>
                   <td>{expense.group_name || "Personal"}</td>
+                  <td>
+                    <button
+                      className="delete-btn"
+                      onClick={() => {
+                        if (
+                          window.confirm(
+                            "Are you sure you want to delete this expense?"
+                          )
+                        ) {
+                          handleDelete(expense.id);
+                        }
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
