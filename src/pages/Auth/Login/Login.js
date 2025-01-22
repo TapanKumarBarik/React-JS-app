@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../../services/api";
 import "./Login.css";
+import Swal from "sweetalert2";
 
 function Login({ setIsAuthenticated }) {
   // Add setIsAuthenticated prop
@@ -26,9 +27,19 @@ function Login({ setIsAuthenticated }) {
       }
     } catch (error) {
       if (error.response?.data?.detail === "Incorrect username or password") {
-        alert("Invalid username or password");
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: "Invalid username or password",
+          confirmButtonColor: "#3085d6",
+        });
       } else {
-        alert("Login failed. Please try again.");
+        Swal.fire({
+          icon: "error",
+          title: "Login Failed",
+          text: "Please try again later",
+          confirmButtonColor: "#3085d6",
+        });
       }
       console.error("Login failed:", error);
     }

@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../../services/api";
 import "./Register.css";
 
+import Swal from "sweetalert2";
+
 function Register() {
   const [userData, setUserData] = useState({
     email: "",
@@ -27,15 +29,41 @@ function Register() {
       };
 
       await api.register(formData);
+
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Registration successful. Please login.",
+        showConfirmButton: false,
+        timer: 1500,
+        position: "top-end",
+        toast: true,
+      });
+
       navigate("/login");
     } catch (error) {
       if (error.response) {
         if (error.response.data.detail === "Email already registered") {
-          alert("Email is already registered");
+          Swal.fire({
+            icon: "error",
+            title: "Registration Failed",
+            text: "Email is already registered",
+            confirmButtonColor: "#3085d6",
+          });
         } else if (error.response.data.detail === "Username already taken") {
-          alert("Username is already taken");
+          Swal.fire({
+            icon: "error",
+            title: "Registration Failed",
+            text: "Username is already taken",
+            confirmButtonColor: "#3085d6",
+          });
         } else {
-          alert("Registration failed. Please try again.");
+          Swal.fire({
+            icon: "error",
+            title: "Registration Failed",
+            text: "Please try again later",
+            confirmButtonColor: "#3085d6",
+          });
         }
       }
       console.error("Registration failed:", error);

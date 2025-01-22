@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services/api";
 import "./Groups.css";
+import Swal from "sweetalert2";
 
 function GroupsPage() {
   const navigate = useNavigate();
@@ -56,10 +57,19 @@ function GroupsPage() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
+      // Get current user from localStorage
+      const currentUser = JSON.parse(localStorage.getItem("userProfile"));
+
+      // If no members selected, use current user as default member
+      const memberIds =
+        selectedMembers.length > 0
+          ? selectedMembers.map((member) => member.id)
+          : [currentUser.id];
+
       await api.createGroup(
         {
           ...newGroup,
-          member_ids: selectedMembers.map((member) => member.id),
+          member_ids: memberIds,
         },
         token
       );
@@ -70,12 +80,24 @@ function GroupsPage() {
       setShowModal(false);
 
       // Show success message
-      alert("Group created successfully!");
-
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Group created successfully",
+        showConfirmButton: false,
+        timer: 1500,
+        position: "top-end",
+        toast: true,
+      });
       // Refresh groups list
       fetchGroups();
     } catch (err) {
-      alert("Failed to create group. Please try again.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Failed to create group. Please try again.",
+        confirmButtonColor: "#3085d6",
+      });
     }
   };
 
@@ -99,20 +121,43 @@ function GroupsPage() {
 
   const handleDeleteGroup = async (e, groupId) => {
     e.stopPropagation(); // Prevent click from bubbling to card
+    // Show delete confirmation with SweetAlert2
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
 
-    if (window.confirm("Are you sure you want to delete this group?")) {
+    if (result.isConfirmed) {
       try {
         const token = localStorage.getItem("token");
         const response = await api.deleteGroup(groupId, token);
 
         if (response.message === "Group deleted successfully") {
-          // Remove the deleted group from state
           setGroups(groups.filter((group) => group.id !== groupId));
-          // Show success message to user
-          alert("Group deleted successfully");
+
+          // Show success message
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Group has been deleted.",
+            showConfirmButton: false,
+            timer: 1500,
+            position: "top-end",
+            toast: true,
+          });
         }
       } catch (err) {
-        alert("Failed to delete group. Please try again.");
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to delete group. Please try again.",
+          confirmButtonColor: "#3085d6",
+        });
         console.error("Delete group error:", err);
       }
     }
