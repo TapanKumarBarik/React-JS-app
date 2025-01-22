@@ -272,8 +272,8 @@
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   transition: all 0.2s;
+  position: relative;
 }
-
 .group-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
@@ -343,4 +343,30 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #2980b9;
+}
+
+.delete-group-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 2;
+}
+
+.delete-group-btn:hover {
+  background-color: #fee2e2;
+  color: #ef4444;
+}
+
+.group-card-inner {
+  pointer-events: none;
 }

@@ -193,4 +193,16 @@ export const api = {
     if (!response.ok) throw await response.json();
     return response.json();
   },
+
+  // Add this to the api object
+  deleteGroup: async (groupId, token) => {
+    const response = await fetch(`${BASE_URL}/groups/${groupId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) throw await response.json();
+    return response.json(); // Will return { message: "Group deleted successfully", group_id: groupId }
+  },
 };

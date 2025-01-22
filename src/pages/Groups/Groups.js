@@ -97,6 +97,26 @@ function GroupsPage() {
     navigate(`/groups/${groupId}`);
   };
 
+  const handleDeleteGroup = async (e, groupId) => {
+    e.stopPropagation(); // Prevent click from bubbling to card
+
+    if (window.confirm("Are you sure you want to delete this group?")) {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await api.deleteGroup(groupId, token);
+
+        if (response.message === "Group deleted successfully") {
+          // Remove the deleted group from state
+          setGroups(groups.filter((group) => group.id !== groupId));
+          // Show success message to user
+          alert("Group deleted successfully");
+        }
+      } catch (err) {
+        alert("Failed to delete group. Please try again.");
+        console.error("Delete group error:", err);
+      }
+    }
+  };
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -116,10 +136,21 @@ function GroupsPage() {
             className="group-card"
             onClick={() => handleGroupClick(group.id)}
           >
-            <h3>{group.name}</h3>
-            <div className="group-info">
-              <p>Members: {group.member_count}</p>
-              <p>Created: {new Date(group.created_at).toLocaleDateString()}</p>
+            <button
+              className="delete-group-btn"
+              onClick={(e) => handleDeleteGroup(e, group.id)}
+              title="Delete Group"
+            >
+              ×
+            </button>
+            <div className="group-card-inner">
+              <h3>{group.name}</h3>
+              <div className="group-info">
+                <p>Members: {group.member_count}</p>
+                <p>
+                  Created: {new Date(group.created_at).toLocaleDateString()}
+                </p>
+              </div>
             </div>
           </div>
         ))}
