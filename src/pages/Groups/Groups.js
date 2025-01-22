@@ -6,14 +6,13 @@ import "./Groups.css";
 function GroupsPage() {
   const navigate = useNavigate();
   const [groups, setGroups] = useState([]);
+  const [showModal, setShowModal] = useState(false);
   const [newGroup, setNewGroup] = useState({
     name: "",
     member_ids: [],
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
-  const [selectedUsers, setSelectedUsers] = useState([]);
-
   const [selectedMembers, setSelectedMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -22,10 +21,8 @@ function GroupsPage() {
     fetchGroups();
   }, []);
 
-  // Update or add these functions
   useEffect(() => {
     if (searchQuery.length >= 2) {
-      // Only search if 2 or more characters
       const searchUsers = async () => {
         try {
           const token = localStorage.getItem("token");
@@ -43,21 +40,6 @@ function GroupsPage() {
     }
   }, [searchQuery]);
 
-  // Add these handler methods
-  const handleUserSelect = (user) => {
-    setSelectedUsers((prev) => [...prev, user]);
-    setSearchResults([]);
-    setSearchQuery("");
-  };
-
-  const handleUserRemove = (userId) => {
-    setSelectedUsers((prev) => prev.filter((user) => user.id !== userId));
-  };
-
-  const handleGroupClick = (groupId) => {
-    navigate(`/groups/${groupId}`);
-  };
-
   const fetchGroups = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -69,6 +51,7 @@ function GroupsPage() {
       setLoading(false);
     }
   };
+
   const handleCreateGroup = async (e) => {
     e.preventDefault();
     try {
@@ -80,11 +63,19 @@ function GroupsPage() {
         },
         token
       );
+
+      // Reset form and close modal
       setNewGroup({ name: "", member_ids: [] });
       setSelectedMembers([]);
+      setShowModal(false);
+
+      // Show success message
+      alert("Group created successfully!");
+
+      // Refresh groups list
       fetchGroups();
     } catch (err) {
-      setError("Failed to create group");
+      alert("Failed to create group. Please try again.");
     }
   };
 
@@ -102,97 +93,112 @@ function GroupsPage() {
     );
   };
 
+  const handleGroupClick = (groupId) => {
+    navigate(`/groups/${groupId}`);
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  // JSX part for the Groups component
   return (
     <div className="groups-page">
-      <div className="page-header">
-        <h1>Groups</h1>
-      </div>
-      <div className="create-group">
-        <h2>Create New Group</h2>
-        <form onSubmit={handleCreateGroup}>
-          <input
-            type="text"
-            placeholder="Enter group name..."
-            value={newGroup.name}
-            onChange={(e) => setNewGroup({ ...newGroup, name: e.target.value })}
-            required
-          />
-          {/* Replace the member search section with this */}
-          <div className="member-search">
-            <input
-              type="text"
-              placeholder="Search users to add..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {searchResults.length > 0 && (
-              <div className="search-results">
-                {searchResults.map((user) => (
-                  <div
-                    key={user.id}
-                    className="search-result-item"
-                    onClick={() => handleAddMember(user)}
-                  >
-                    {user.username}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          <div className="selected-members">
-            {selectedMembers.map((member) => (
-              <div key={member.id} className="selected-member">
-                <span>{member.username}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMember(member.id)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-
-          <button type="submit">Create Group</button>
-        </form>
+      <div className="groups-header">
+        <h1>My Groups</h1>
+        <button className="add-group-btn" onClick={() => setShowModal(true)}>
+          <span>+</span> Create New Group
+        </button>
       </div>
 
-      <div className="groups-list">
+      <div className="groups-grid">
         {groups.map((group) => (
           <div
             key={group.id}
             className="group-card"
             onClick={() => handleGroupClick(group.id)}
-            role="button"
-            tabIndex={0}
           >
-            <div className="click-indicator">
-              <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 5l-8 8h16l-8-8z" />
-              </svg>
-              Click to view
-            </div>
             <h3>{group.name}</h3>
-            <div className="group-card-stats">
-              <div className="stat-item">
-                <span className="stat-label">Members</span>
-                <span className="stat-value">{group.member_count}</span>
-              </div>
-              <div className="stat-item">
-                <span className="stat-label">Created</span>
-                <span className="stat-value">
-                  {new Date(group.created_at).toLocaleDateString()}
-                </span>
-              </div>
+            <div className="group-info">
+              <p>Members: {group.member_count}</p>
+              <p>Created: {new Date(group.created_at).toLocaleDateString()}</p>
             </div>
           </div>
         ))}
       </div>
+
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="modal-close" onClick={() => setShowModal(false)}>
+              ×
+            </button>
+            <h2>Create New Group</h2>
+            <form onSubmit={handleCreateGroup}>
+              <div className="form-group">
+                <label>Group Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter a name for your group"
+                  value={newGroup.name}
+                  onChange={(e) =>
+                    setNewGroup({ ...newGroup, name: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Add Members</label>
+                <div className="member-search">
+                  <input
+                    type="text"
+                    placeholder="Type username to search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchResults.length > 0 && (
+                    <div className="search-results">
+                      {searchResults.map((user) => (
+                        <div
+                          key={user.id}
+                          className="search-result-item"
+                          onClick={() => handleAddMember(user)}
+                        >
+                          <span className="username">{user.username}</span>
+                          <span className="add-icon">+</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {selectedMembers.length > 0 && (
+                <div className="form-group">
+                  <label>Selected Members</label>
+                  <div className="selected-members">
+                    {selectedMembers.map((member) => (
+                      <div key={member.id} className="selected-member">
+                        <span>{member.username}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveMember(member.id)}
+                          className="remove-member"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button type="submit" className="create-button">
+                Create Group
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
