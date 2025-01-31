@@ -30,6 +30,8 @@ function ExpensesPage() {
         api.getExpensesByPeriod(filter.period, filter.value, token),
         api.getMyGroups(token),
       ]);
+
+      console.log("Expenses data:", expensesData); // Add this line
       setExpenses(expensesData);
       setGroups(groupsData);
       setLoading(false);
@@ -167,7 +169,7 @@ function ExpensesPage() {
                   <td>{new Date(expense.created_at).toLocaleDateString()}</td>
                   <td>{expense.description}</td>
                   <td className="amount">${expense.amount.toFixed(2)}</td>
-                  <td>{expense.group_name || "Personal"}</td>
+                  <td>{expense.group ? expense.group.name : "Personal"}</td>
                   <td>
                     <button
                       className="delete-btn"

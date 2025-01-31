@@ -205,4 +205,58 @@ export const api = {
     if (!response.ok) throw await response.json();
     return response.json(); // Will return { message: "Group deleted successfully", group_id: groupId }
   },
+
+  // Add these methods to the api object in api.js
+  todos: {
+    create: async (todoData, token) => {
+      const response = await fetch(`${BASE_URL}/todos/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(todoData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    getActive: async (token) => {
+      const response = await fetch(`${BASE_URL}/todos/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+    update: async (todoId, todoData, token) => {
+      const response = await fetch(`${BASE_URL}/todos/${todoId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: todoData.title,
+          description: todoData.description,
+          due_date: todoData.due_date,
+          status: todoData.status,
+        }),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    delete: async (todoId, token) => {
+      const response = await fetch(`${BASE_URL}/todos/${todoId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+  },
 };

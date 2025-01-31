@@ -17,6 +17,7 @@ import GroupsPage from "./pages/Groups/Groups"; // Fix import path
 import "./App.css";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import GroupDetails from "./pages/Groups/GroupDetails";
+import Todos from "./pages/Todos/Todos";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(
@@ -40,6 +41,7 @@ function App() {
               <main className="content">
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/todos" element={<Todos />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/groups" element={<GroupsPage />} />
                   <Route path="/groups/:groupId" element={<GroupDetails />} />
@@ -54,6 +56,7 @@ function App() {
               path="/login"
               element={<Login setIsAuthenticated={setIsAuthenticated} />}
             />
+
             <Route path="/register" element={<Register />} />
             <Route path="/" element={<Preview />} />
             <Route path="*" element={<Navigate to="/" />} />
