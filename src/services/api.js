@@ -259,4 +259,131 @@ export const api = {
       return response.json();
     },
   },
+  // Add this to the existing api object in src/services/api.js
+  notebooks: {
+    create: async (notebookData, token) => {
+      const response = await fetch(`${BASE_URL}/notebooks/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(notebookData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    getAll: async (token) => {
+      const response = await fetch(`${BASE_URL}/notebooks/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    delete: async (notebookId, token) => {
+      const response = await fetch(`${BASE_URL}/notebooks/${notebookId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+  },
+
+  sections: {
+    create: async (notebookId, sectionData, token) => {
+      const response = await fetch(
+        `${BASE_URL}/notebooks/${notebookId}/sections/`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(sectionData),
+        }
+      );
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    getAll: async (notebookId, token) => {
+      const response = await fetch(
+        `${BASE_URL}/notebooks/${notebookId}/sections/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    delete: async (sectionId, token) => {
+      const response = await fetch(`${BASE_URL}/sections/${sectionId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+  },
+
+  pages: {
+    create: async (sectionId, pageData, token) => {
+      const response = await fetch(`${BASE_URL}/sections/${sectionId}/pages/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(pageData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    getAll: async (sectionId, token) => {
+      const response = await fetch(`${BASE_URL}/sections/${sectionId}/pages/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    update: async (pageId, pageData, token) => {
+      const response = await fetch(`${BASE_URL}/pages/${pageId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(pageData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    delete: async (pageId, token) => {
+      const response = await fetch(`${BASE_URL}/pages/${pageId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+  },
 };

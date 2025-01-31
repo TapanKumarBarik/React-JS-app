@@ -14,6 +14,7 @@ import Home from "./pages/Home/Home";
 import Preview from "./pages/Preview/Preview";
 import ExpensesPage from "./pages/Expenses/Expenses"; // Fix import path
 import GroupsPage from "./pages/Groups/Groups"; // Fix import path
+import Notes from "./pages/Notes/Notes";
 import "./App.css";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import GroupDetails from "./pages/Groups/GroupDetails";
@@ -42,6 +43,7 @@ function App() {
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/todos" element={<Todos />} />
+                  <Route path="/notes" element={<Notes />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/groups" element={<GroupsPage />} />
                   <Route path="/groups/:groupId" element={<GroupDetails />} />
