@@ -258,6 +258,16 @@ export const api = {
       if (!response.ok) throw await response.json();
       return response.json();
     },
+
+    getCompleted: async (token) => {
+      const response = await fetch(`${BASE_URL}/todos/completed`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
   },
   // Add this to the existing api object in src/services/api.js
   notebooks: {

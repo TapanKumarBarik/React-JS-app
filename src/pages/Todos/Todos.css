@@ -227,3 +227,30 @@
 .empty-state p {
   color: #7f8c8d;
 }
+/* In src/pages/Todos/Todos.css */
+.todos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.todos-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.view-completed-btn {
+  padding: 8px 16px;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-completed-btn:hover {
+  background-color: #27ae60;
+  transform: translateY(-2px);
+}

@@ -19,6 +19,7 @@ import "./App.css";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import GroupDetails from "./pages/Groups/GroupDetails";
 import Todos from "./pages/Todos/Todos";
+import CompletedTodos from "./pages/Todos/CompletedTodos";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(
@@ -43,6 +44,7 @@ function App() {
                 <Routes>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/todos" element={<Todos />} />
+                  <Route path="/todos/completed" element={<CompletedTodos />} />
                   <Route path="/notes" element={<Notes />} />
                   <Route path="/expenses" element={<ExpensesPage />} />
                   <Route path="/groups" element={<GroupsPage />} />

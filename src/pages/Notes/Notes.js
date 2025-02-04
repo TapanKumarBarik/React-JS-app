@@ -12,6 +12,7 @@ function Notes() {
   const [selectedSection, setSelectedSection] = useState(null);
   const [currentPage, setCurrentPage] = useState(null);
   const [pageContent, setPageContent] = useState("");
+  const [pageLoading, setPageLoading] = useState(false);
 
   // UI state
   const [isPageView, setIsPageView] = useState(false);
@@ -28,9 +29,18 @@ function Notes() {
 
   // Initial load of notebooks
   useEffect(() => {
+    // Set loading to true when component mounts
+    setLoading(true);
     fetchNotebooks();
-  }, []);
 
+    // Optional: Reset states when component unmounts
+    return () => {
+      setLoading(true);
+      setNotebooks([]);
+      setSections([]);
+      setPages([]);
+    };
+  }, []); // Empty dependency array means this runs once on mount
   // Fetch sections when notebook is selected
   useEffect(() => {
     if (selectedNotebook) {
@@ -56,10 +66,10 @@ function Notes() {
       const token = localStorage.getItem("token");
       const data = await api.notebooks.getAll(token);
       setNotebooks(data);
-      setLoading(false);
+      setLoading(false); // Loading state is cleared here
     } catch (err) {
       setError("Failed to fetch notebooks");
-      setLoading(false);
+      setLoading(false); // And here in case of error
     }
   };
 
@@ -183,9 +193,11 @@ function Notes() {
   };
 
   const handlePageClick = async (page) => {
+    setPageLoading(true); // Set loading before fetching
     setCurrentPage(page);
     setPageContent(page.content || "");
     setIsPageView(true);
+    setPageLoading(false); // Clear loading after content is set
   };
   // Add these functions before the return statement
 
@@ -288,7 +300,14 @@ function Notes() {
       });
     }
   };
-
+  const handleSectionClick = (section) => {
+    // Reset page view state when changing sections
+    setIsPageView(false);
+    setCurrentPage(null);
+    setPageContent("");
+    setSelectedSection(section);
+    fetchPages(section.id);
+  };
   const handleBackToPages = () => {
     setIsPageView(false);
     setCurrentPage(null);
@@ -355,7 +374,7 @@ function Notes() {
               className={`section-item ${
                 selectedSection?.id === section.id ? "active" : ""
               }`}
-              onClick={() => setSelectedSection(section)}
+              onClick={() => handleSectionClick(section)}
             >
               {section.title}
               <button
@@ -416,28 +435,37 @@ function Notes() {
             {/* Single Page View */}
             {isPageView && currentPage && (
               <div className="single-page-view">
-                <button
-                  className="back-button"
-                  onClick={() => setIsPageView(false)}
-                >
-                  ← Back to Pages
-                </button>
-                <input
-                  type="text"
-                  className="page-title"
-                  value={currentPage.title}
-                  onChange={(e) =>
-                    setCurrentPage({ ...currentPage, title: e.target.value })
-                  }
-                />
-                <textarea
-                  className="page-content"
-                  value={pageContent}
-                  onChange={(e) => setPageContent(e.target.value)}
-                />
-                <button className="submit-button" onClick={handleSavePage}>
-                  Save
-                </button>
+                {pageLoading ? (
+                  <div className="loading">Loading page content...</div>
+                ) : (
+                  <>
+                    <button
+                      className="back-button"
+                      onClick={() => setIsPageView(false)}
+                    >
+                      ← Back to Pages
+                    </button>
+                    <input
+                      type="text"
+                      className="page-title"
+                      value={currentPage.title}
+                      onChange={(e) =>
+                        setCurrentPage({
+                          ...currentPage,
+                          title: e.target.value,
+                        })
+                      }
+                    />
+                    <textarea
+                      className="page-content"
+                      value={pageContent}
+                      onChange={(e) => setPageContent(e.target.value)}
+                    />
+                    <button className="submit-button" onClick={handleSavePage}>
+                      Save
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </div>

@@ -3,7 +3,10 @@ import { api } from "../../services/api";
 import Swal from "sweetalert2";
 import "./Todos.css";
 
+import { useNavigate } from "react-router-dom";
+
 function Todos() {
+  const navigate = useNavigate();
   const [todos, setTodos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [newTodo, setNewTodo] = useState({
@@ -123,6 +126,14 @@ function Todos() {
     <div className="todos-page">
       <div className="todos-header">
         <h1>Todo List</h1>
+        <div className="todos-actions">
+          <button
+            className="view-completed-btn"
+            onClick={() => navigate("/todos/completed")}
+          >
+            View Completed Todos
+          </button>
+        </div>
       </div>
 
       <div className="todos-list">
