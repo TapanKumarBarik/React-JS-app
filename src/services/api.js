@@ -396,4 +396,55 @@ export const api = {
       return response.json();
     },
   },
+
+  dsaApi: {
+    // Problems
+    getAllProblems: async (filters = {}, token) => {
+      const queryParams = new URLSearchParams(filters).toString();
+      const response = await fetch(`${BASE_URL}/problems/?${queryParams}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    createProblem: async (problemData, token) => {
+      const response = await fetch(`${BASE_URL}/problems/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(problemData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    // Tags
+    getAllTags: async (token) => {
+      const response = await fetch(`${BASE_URL}/tags/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+
+    createTag: async (tagData, token) => {
+      const response = await fetch(`${BASE_URL}/tags/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(tagData),
+      });
+      if (!response.ok) throw await response.json();
+      return response.json();
+    },
+  },
 };

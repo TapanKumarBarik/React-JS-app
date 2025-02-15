@@ -36,6 +36,12 @@ function Sidebar() {
         >
           Todo List
         </NavLink>
+        <NavLink
+          to="/problems"
+          className={({ isActive }) => (isActive ? "active" : "")}
+        >
+          problems
+        </NavLink>
       </nav>
     </div>
   );

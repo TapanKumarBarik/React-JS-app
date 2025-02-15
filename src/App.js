@@ -20,6 +20,7 @@ import Dashboard from "./pages/Dashboard/Dashboard";
 import GroupDetails from "./pages/Groups/GroupDetails";
 import Todos from "./pages/Todos/Todos";
 import CompletedTodos from "./pages/Todos/CompletedTodos";
+import Problems from "./pages/DSA/Problems";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = React.useState(
@@ -42,6 +43,7 @@ function App() {
               <Sidebar />
               <main className="content">
                 <Routes>
+                  <Route path="/problems" element={<Problems />} />
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/todos" element={<Todos />} />
                   <Route path="/todos/completed" element={<CompletedTodos />} />
